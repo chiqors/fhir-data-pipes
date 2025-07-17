@@ -2,11 +2,11 @@ name: Build and Push to GHCR
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
     # Publish semvar tags as releases.
-    tags: [ 'v*.*.*' ]
+    tags: [ '*.*.*' ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 # This job builds and pushes the Docker image to GHCR
 jobs:
