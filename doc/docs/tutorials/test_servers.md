@@ -14,6 +14,10 @@ There are _3 Docker server_ configurations you can use for testing:
 
 **Note**: All commands are run from the root directory of the repository.
 
+!!! info "Information" This tutorial has been updated to use `docker compose`
+instead of `docker-compose`. If you have an older version of Docker that does
+not support `docker compose`, you can continue to use `docker-compose` commands.
+
 1.  Create an external Docker network named `cloudbuild`:
 
     ```
@@ -46,12 +50,24 @@ There are _3 Docker server_ configurations you can use for testing:
     to the FHIR server that you brought up using the
     [Synthea data uploader](https://github.com/google/fhir-data-pipes/blob/master/synthea-hiv/README.md#Uploader).
 
-    The uploader requires the `google-auth` Python library, which you can
-    install using:
+    The uploader requires that you install the `uploader` module requirements
+    first. You can do this by running:
 
     ```shell
-    pip3 install --upgrade google-auth
+    pip3 install -r ./synthea-hiv/uploader/requirements.txt
     ```
+
+    Please note, it is a good idea to first create a Python `virtualenv` before
+    running the above command to avoid conflicts with other Python packages you
+    may have installed globally. You can do this by running:
+
+    ```shell
+    $ virtualenv -p python3.8 venv
+    $ . ./venv/bin/activate
+    ```
+
+    Then, you can run the uploader script to upload the synthetic data to the
+    FHIR server.
 
     For example, to upload to the HAPI FHIR server brought up in the previous
     step, run:
@@ -72,7 +88,7 @@ There are _3 Docker server_ configurations you can use for testing:
     [HAPI FHIR server](https://github.com/google/fhir-data-pipes/blob/master/docker/sink-compose.yml):
 
     ```shell
-    docker-compose  -f ./docker/sink-compose.yml up  --force-recreate -d
+    docker compose  -f ./docker/sink-compose.yml up  --force-recreate -d
     ```
 
     The base URL for this server is `http://localhost:8098/fhir`.
@@ -84,17 +100,17 @@ username "admin" and password "Admin123". The Docker image includes the required
 FHIR2 module and demo data. Edit `docker/openmrs-compose.yaml` to change the
 default port.
 
-**Note:** If `docker-compose` fails, you may need to adjust file permissions. In
+**Note:** If `docker compose` fails, you may need to adjust file permissions. In
 particular if the permissions on `mysqld.cnf` is not right, the `datadir` set in
 this file will not be read by MySQL and it will cause OpenMRS to require its
 `initialsetup` (which is not needed since the MySQL image already has all the
 data and tables needed):
 
 ```shell
-$ docker-compose -f docker/openmrs-compose.yaml down -v
+$ docker compose -f docker/openmrs-compose.yaml down -v
 $ chmod a+r docker/mysql-build/mysqld.cnf
 $ chmod -R a+r ./utils
-$ docker-compose -f docker/openmrs-compose.yaml up
+$ docker compose -f docker/openmrs-compose.yaml up
 ```
 
 In order to see the demo data in OpenMRS you must rebuild the search index. In
